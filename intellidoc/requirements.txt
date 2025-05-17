@@ -1,0 +1,15 @@
+flask
+dash
+openai
+PyMuPDF
+pytesseract
+Pillow
+scikit-learn
+numpy
+ultralytics
+opencv-python
+faiss-cpu
+python-dotenv
+requests
+gunicorn
+pandas
