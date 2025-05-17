@@ -120,7 +120,7 @@
 ---
 
 ## 📁 Estrutura do Projeto
-
+```bash
 intellidoc/
 ├── app/                          # Módulos de backend e processamento (OCR, RAG, YOLO, embeddings, etc.)
 │   ├── __init__.py              # Inicializador do pacote app (pode estar vazio)
@@ -143,6 +143,7 @@ intellidoc/
 │
 ├── run.py                       # Arquivo de execução para produção (ex: via gunicorn)
 │                                # Pode simplesmente fazer `from dash_app import server`
+```
 
 ## 🛠️ Como Executar o Projeto Localmente
 
