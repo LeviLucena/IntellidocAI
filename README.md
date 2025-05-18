@@ -124,27 +124,39 @@ https://github.com/user-attachments/assets/9228f762-07f9-482a-a931-d3042f04d5f5
 ## 📁 Estrutura do Projeto
 ```bash
 intellidoc/
-├── app/                          # Módulos de backend e processamento (OCR, RAG, YOLO, embeddings, etc.)
-│   ├── __init__.py              # Inicializador do pacote app (pode estar vazio)
-│   ├── ocr.py                   # Módulo de OCR: extrai texto de PDFs usando PyMuPDF e pytesseract
-│   ├── rag.py                   # Módulo de RAG: recuperação + geração com embeddings e OpenAI
-│   ├── yolo_detector.py         # Módulo de detecção visual com YOLO (Ultralytics + OpenCV)
-│   ├── embeddings.py            # Geração de embeddings com API OpenAI (modelo text-embedding-3)
-│   ├── utils.py                 # Funções auxiliares diversas (opcional)
-│
-├── assets/                      # Pasta padrão do Dash para assets estáticos (imagens, CSS, etc.)
-│   └── logo.png                 # Logotipo exibido na interface (usado com `html.Img`)
-│
-├── dash_app.py                  # Arquivo principal da aplicação com layout e callbacks do Dash
-│                                # Integra os módulos de OCR, RAG e YOLO e define a interface do usuário
-│
-├── config.py                    # Configuração global (ex.: leitura de variáveis de ambiente)
-│                                # Inclui sua chave da OpenAI e outras configurações
-│
-├── requirements.txt             # Lista de dependências para instalar o ambiente (pip install -r)
-│
-├── run.py                       # Arquivo de execução para produção (ex: via gunicorn)
-│                                # Pode simplesmente fazer `from dash_app import server`
+├── __pycache__/                     # Cache interno do Python (pode ser ignorado ou excluído do controle de versão)
+├── app/                             # Lógica de backend e processamento inteligente
+│   ├── __pycache__/                 # Cache dos módulos Python (pode ser ignorado)
+│   ├── __init__.py                  # Inicializador do pacote app
+│   ├── routes.py                    # (Opcional) Se estiver usando Flask ou fastAPI para rotas customizadas
+│   ├── ocr.py                       # Extração de texto com PyMuPDF + Tesseract OCR
+│   ├── yolo_detector.py            # Detecção visual com YOLO (objetos e assinaturas)
+│   ├── rag.py                       # Retrieval-Augmented Generation (RAG) com OpenAI
+│   ├── embeddings.py                # Criação de embeddings e integração com vector store
+│   ├── vector_store.py              # Faiss index e recuperação vetorial de documentos
+│   ├── nlp_utils.py                 # Utilitários de NLP, tokenização, limpeza etc.
+├── assets/
+│   ├── logo.png                     # Logotipo exibido no layout do Dash
+├── models/signatures/              # Diretório de treino YOLO para assinaturas
+│   ├── datasets/
+│   │   ├── train/                   # Conjunto de treino (imagens + labels YOLO)
+│   │   ├── valid/                   # Conjunto de validação (imagens + labels YOLO)
+│   │   ├── data.yaml                # Arquivo de configuração para o treinamento
+│   │   ├── signature.yaml           # Configuração específica do dataset de assinaturas
+│   ├── runs/detect/
+│   │   ├── train1 ... train7/       # Experimentos de treino (YOLOv8) com pesos, logs etc.
+│   │   │   ├── weights/
+│   │   │   │   ├── best.pt          # Melhor modelo (assinaturas) salvo durante o treino
+│   │   │   │   ├── last.pt          # Último estado salvo do modelo
+│   ├── train_signatures.py         # Script de treino para assinatura com Ultralytics YOLO
+│   ├── yolov8n.pt                   # Modelo pré-treinado geral (objetos) da Ultralytics
+├── templates/                       # (Opcional) Para templates HTML, se usar Flask (não usado por Dash diretamente)
+├── dash_app.py                      # Interface principal Dash com uploads, visualização, OCR, RAG e YOLO
+├── config.py                        # Leitura de variáveis de ambiente, chaves da OpenAI, caminhos de modelo, etc.
+├── requirements.txt                 # Lista atualizada de dependências do projeto
+├── run.py                           # Entry point para execução local ou produção (via gunicorn, por exemplo)
+├── yolov8n.pt                       # Cópia local (redundante?) do modelo pré-treinado YOLO para objetos
+
 ```
 
 ## 🛠️ Como Executar o Projeto Localmente
