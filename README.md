@@ -97,8 +97,7 @@
 - Digite uma pergunta sobre o conteúdo do documento.
 - Veja a resposta gerada com base nos trechos mais relevantes.
 
-https://github.com/user-attachments/assets/00a518a3-0bba-4b1e-98e5-0d65c259b287
-
+https://github.com/user-attachments/assets/9228f762-07f9-482a-a931-d3042f04d5f5
 
 ---
 
