@@ -1,4 +1,3 @@
-# dash_app.py
 import dash
 from dash import html, dcc, Input, Output, State
 import base64
@@ -6,9 +5,12 @@ import io
 
 from app.ocr import extract_text_from_pdf
 from app.rag import answer_question
-from app.yolo_detector import detect_visual_elements, detect_and_draw
+from app.yolo_detector import (
+    detect_visual_elements,
+    detect_signatures_in_pdf,
+    detect_and_draw_combined  # IMPORT CORRETO
+)
 
-# Links para Bootstrap 4 e FontAwesome 5 CDN
 external_stylesheets = [
     "https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css",
     "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
@@ -18,12 +20,9 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 server = app.server
 
 app.layout = html.Div(className="container mt-4", children=[
-
     html.Div([
-    html.Img(src="/assets/logo.png", style={"height": "200px", "width": "auto"}, className="d-block mx-auto mb-4"),
-    # html.H2("IntelliDoc AI - Análise de Documentos", className="mb-0")
-], className="d-flex align-items-center mb-4"),
-
+        html.Img(src="/assets/logo.png", style={"height": "200px", "width": "auto"}, className="d-block mx-auto mb-4"),
+    ], className="d-flex align-items-center mb-4"),
 
     dcc.Upload(
         id='upload-doc',
@@ -36,7 +35,10 @@ app.layout = html.Div(className="container mt-4", children=[
 
     dcc.Checklist(
         id='yolo-check',
-        options=[{'label': ' Rodar análise visual com YOLO', 'value': 'run_yolo'}],
+        options=[
+            {'label': ' Rodar análise visual com YOLO', 'value': 'run_yolo'},
+            {'label': ' Detectar assinaturas no documento', 'value': 'run_signatures'}
+        ],
         value=[],
         className="form-check mb-3"
     ),
@@ -65,7 +67,7 @@ app.layout = html.Div(className="container mt-4", children=[
 
     html.Hr(),
 
-    html.H4("Resultados da análise visual (YOLO)", className="mb-3"),
+    html.H4("Resultados da Análise Visual", className="mb-3"),
 
     html.Pre(id='yolo-output', style={'backgroundColor': '#f9f9f9', 'padding': '10px'}, className="mb-4"),
 
@@ -97,32 +99,40 @@ def handle_upload(contents, filename, yolo_opt):
             yolo_output = ""
             yolo_images = []
 
-            if 'run_yolo' in yolo_opt:
-                detections = detect_visual_elements(file_stream)
+            if 'run_yolo' in yolo_opt or 'run_signatures' in yolo_opt:
+                file_stream.seek(0)
+                detections_objects = detect_visual_elements(file_stream)
 
                 file_stream.seek(0)
-                images_base64 = detect_and_draw(file_stream)
+                signature_detections = detect_signatures_in_pdf(file_stream)
 
-                flat = [
-                    f"Página {d['page']} - {d['label']} ({d['confidence']:.2f}): {d['bbox']}"
-                    for page in detections for d in page
+                # Texto de saída
+                flat_obj = [
+                    f"[YOLOv8] Página {d['page']} - {d['label']} ({d['confidence']:.2f}): {d['bbox']}"
+                    for page in detections_objects for d in page
                 ]
-                yolo_output = "\n".join(flat) if flat else "Nenhuma detecção relevante."
+                flat_sig = [
+                    f"[ASSINATURA] Página {d['page']} - {d['label']} ({d['confidence']:.2f}): {d['bbox']}"
+                    for d in signature_detections
+                ]
+                yolo_output += "\n".join(flat_obj + flat_sig) + "\n\n" if flat_obj or flat_sig else "Nenhuma detecção relevante.\n\n"
 
+                # Imagem combinada
+                file_stream.seek(0)
+                combined_images = detect_and_draw_combined(file_stream)
                 yolo_images = [
                     html.Div([
-                        html.H6(f"Página {i + 1}"),
+                        html.H6(f"Detecções - Página {i + 1}"),
                         html.Img(
                             src=f"data:image/png;base64,{img}",
                             style={'maxWidth': '100%', 'border': '1px solid #ccc', 'marginBottom': '20px'}
                         )
                     ])
-                    for i, img in enumerate(images_base64)
+                    for i, img in enumerate(combined_images)
                 ]
 
-            return text, f"Arquivo carregado: {filename}", yolo_output, yolo_images
+            return text, filename, yolo_output, yolo_images
 
-        # Caso não tenha conteúdo
         return "", "", "", []
 
     except Exception as e:

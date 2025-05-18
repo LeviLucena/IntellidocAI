@@ -1,15 +1,24 @@
+# Core Web App
 flask
 dash
+gunicorn  # Para deploy
+
+# OpenAI e RAG
 openai
-PyMuPDF
-pytesseract
-Pillow
-scikit-learn
-numpy
-ultralytics
-opencv-python
 faiss-cpu
 python-dotenv
 requests
-gunicorn
+
+# PDF e OCR
+PyMuPDF  # Para ler e renderizar PDFs
+pytesseract
+Pillow  # Necessária para imagem com pytesseract
+
+# YOLOv8 e visão computacional
+ultralytics  # YOLOv8 oficial da Ultralytics
+opencv-python
+
+# NLP e embeddings
+scikit-learn
+numpy
 pandas
