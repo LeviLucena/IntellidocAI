@@ -97,6 +97,8 @@
 - Digite uma pergunta sobre o conteúdo do documento.
 - Veja a resposta gerada com base nos trechos mais relevantes.
 
+https://github.com/user-attachments/assets/9228f762-07f9-482a-a931-d3042f04d5f5
+
 ---
 
 ## 🧰 Tecnologias Utilizadas
